@@ -1,0 +1,53 @@
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Select, SelectItem } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+
+export default function AVControlUI() {
+  const [device, setDevice] = useState("");
+  const [controlSystem, setControlSystem] = useState("");
+  const [command, setCommand] = useState("");
+  const [generatedCode, setGeneratedCode] = useState("");
+
+  const generateCode = () => {
+    let code = "";
+    if (device === "Sony Display" && controlSystem === "AMX") {
+      code = "SEND_STRING dvSonyDisplay, '*POWR00000001', 13";
+    } else if (device === "Sony Display" && controlSystem === "Crestron") {
+      code = "ToDisplay = '*POWR00000001\r'";
+    } else if (device === "Sony Display" && controlSystem === "Extron") {
+      code = "send_string(1, '\x02PWR ON\x03')";
+    } else if (device === "Sony Display" && controlSystem === "Q-SYS") {
+      code = "send('DISPLAY1', 'power_on')";
+    }
+    setGeneratedCode(code);
+  };
+
+  return (
+    <div className="p-4 space-y-4 max-w-lg mx-auto">
+      <Card>
+        <CardContent className="space-y-4">
+          <h2 className="text-xl font-bold">AV Control Code Generator</h2>
+          <Select onValueChange={setDevice} placeholder="Select Device">
+            <SelectItem value="Sony Display">Sony Display</SelectItem>
+          </Select>
+          <Select onValueChange={setControlSystem} placeholder="Select Control System">
+            <SelectItem value="AMX">AMX</SelectItem>
+            <SelectItem value="Crestron">Crestron</SelectItem>
+            <SelectItem value="Extron">Extron</SelectItem>
+            <SelectItem value="Q-SYS">Q-SYS</SelectItem>
+          </Select>
+          <Select onValueChange={setCommand} placeholder="Select Command">
+            <SelectItem value="Power On">Power On</SelectItem>
+            <SelectItem value="Power Off">Power Off</SelectItem>
+          </Select>
+          <Button onClick={generateCode} className="w-full">Generate Code</Button>
+          {generatedCode && (
+            <Textarea value={generatedCode} readOnly className="mt-4" />
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
